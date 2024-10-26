@@ -1,51 +1,76 @@
-import { ClientIdType, clients, IUser, users } from '../db/users';
-import { findUserByClientId, sendMessage } from '../helpers/helpers';
-import { games, IGame, IGameUser, IRoom, IRoomUser, RoomIdType, rooms } from '../db/app';
-import { randomUUID } from 'node:crypto';
-import { IAddUserToRoomData } from '../types/interface';
+import { ClientIdType, UserIdType, users } from '../db/users';
+import { IAddShipsData, IShip } from '../types/interface';
+import { games, GameStatusType, IGame, IGameUser } from '../db/app';
+import { sendMessage } from '../helpers/helpers';
+import { IStartGameData, ITurnData } from '../types/response';
 
-export const addUserToRoomHandler = (data: IAddUserToRoomData, clientId: ClientIdType) => {
-  const user = findUserByClientId(users, clientId);
-  const room = rooms.get(data.indexRoom);
+export const addShipsHandler = (data: IAddShipsData, clientId: ClientIdType) => {
+  const currentGame = games.get(data.gameId);
 
-  if (user && room) {
-    const userInRoom = _getUsersInRoom(room.roomId);
-    const usersForGame = [userInRoom, { index: user.id, name: user.name }];
-    console.log('[start game]', rooms, userInRoom, user);
-    const newGame = _generateNewGame(usersForGame);
+  if (!currentGame) return;
 
-    rooms.delete(data.indexRoom);
-    games.set(newGame.gameId, newGame);
+  const updatedStatus: GameStatusType = currentGame.gameStatus === 'set_ships' ? 'in_progress' : 'set_ships';
+  const updatedUsers: IGameUser[] = currentGame.users.map((user) =>
+    user.index === data.indexPlayer ? { ...user, ships: data.ships, shipsGrid: _setShipsToGrid(data.ships) } : user,
+  );
 
-    Array.from(clients.keys()).forEach((id: ClientIdType) => {
-      sendMessage(id, 'update_room', Array.from(rooms.values()));
-    });
+  const updatedGame: IGame = {
+    ...currentGame,
+    users: updatedUsers,
+    gameStatus: updatedStatus,
+  };
 
-    newGame.users.forEach((user) => {
-      const createGameResponseData = {
-        idGame: newGame.gameId,
-        idPlayer: user.index,
-      };
+  games.set(data.gameId, updatedGame);
 
-      const clientId = users.get(user.index)?.clientId;
+  console.log('[UPDATED STATUS', updatedStatus);
+  if (updatedStatus === 'in_progress') {
+    currentGame.users
+      .map((user: IGameUser) => user.index)
+      .forEach((userId: UserIdType) => {
+        const userData = users.get(userId);
+        const userInGame = updatedGame.users.find((user) => user.index === userId);
+        if (userInGame && userInGame.ships && userData && userData.clientId) {
+          const startGameData: IStartGameData = {
+            ships: userInGame.ships,
+            currentPlayerIndex: userId,
+          };
+          const turnData: ITurnData = {
+            currentPlayer: data.indexPlayer,
+          };
 
-      if (clientId) {
-        sendMessage(clientId, 'create_game', createGameResponseData);
-      }
-    });
+          sendMessage(userData.clientId, 'start_game', startGameData);
+          sendMessage(userData.clientId, 'turn', turnData);
+        }
+      });
   }
 };
 
-const _generateNewGame = (users: IRoomUser[]): IGame => ({
-  gameId: randomUUID(),
-  users,
-  gameStatus: 'init',
-});
-
-const _getUsersInRoom = (roomId: RoomIdType): IRoomUser => {
-  const room = rooms.get(roomId);
-  console.log('[ROOM]', room, room?.roomUsers[0]);
-  if (room) {
-    return room.roomUsers[0];
+const _setShipsToGrid = (ships: IShip[]): [][] => {
+  // the idea to create array of arrays and then set ships in these arrays like a coordinate
+  // for example [[null, small, null, ...], ...] It means the coordinate for the small ship is x: 0, y:1
+  const gridShipsLength = 10;
+  const shipsGrid = [];
+  for (let i = 0; i < gridShipsLength; i++) {
+    shipsGrid.push(new Array(gridShipsLength).fill(null));
   }
+
+  ships.forEach((ship) => {
+    const initialPositionX = ship.position.x;
+    const initialPositionY = ship.position.y;
+    let positionX = initialPositionX;
+    let positionY = initialPositionY;
+
+    // Fill grid by ships according to them type
+    for (let k = 0; k < ship.length; k++) {
+      if (ship.direction) {
+        positionY = initialPositionY + k;
+      } else {
+        positionX = initialPositionX + k;
+      }
+      shipsGrid[positionY][positionX] = ship.type;
+    }
+  });
+
+  console.log('GRID', shipsGrid);
+  return shipsGrid;
 };

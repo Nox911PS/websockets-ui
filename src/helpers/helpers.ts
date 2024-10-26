@@ -27,3 +27,7 @@ export const sendMessage = (clientId: ClientIdType, type: RequestType, data: unk
     ws.send(JSON.stringify(response));
   }
 };
+
+export const sendMessages = (clientIds: ClientIdType[], type: RequestType, data: unknown) => {
+  clientIds.forEach((clientId) => sendMessage(clientId, type, data));
+};

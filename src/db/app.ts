@@ -25,6 +25,7 @@ export interface IGameUser {
   name: string;
   index: UserIdType;
   ships: IShip[] | null;
+  shipsGrid: [][];
 }
 
 export interface IGame {

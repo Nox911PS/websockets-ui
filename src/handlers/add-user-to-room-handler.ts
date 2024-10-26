@@ -1,25 +1,55 @@
-import { ClientIdType, clients, users } from '../db/users';
-import { findUserByClientId, sendMessage } from '../helpers/helpers';
-import { IRoom, rooms, winners } from '../db/app';
+import { ClientIdType, clients, IUser, users } from '../db/users';
+import { findUserByClientId, sendMessage, sendMessages } from '../helpers/helpers';
+import { games, IGame, IGameUser, IRoom, IRoomUser, RoomIdType, rooms } from '../db/app';
 import { randomUUID } from 'node:crypto';
+import { IAddUserToRoomData } from '../types/interface';
 
-export const createRoomHandler = (data: string, clientId: ClientIdType) => {
+export const addUserToRoomHandler = (data: IAddUserToRoomData, clientId: ClientIdType) => {
   const user = findUserByClientId(users, clientId);
+  const room = rooms.get(data.indexRoom);
 
-  if (user) {
-    const newRoom: IRoom = {
-      roomId: randomUUID(),
-      roomUsers: [
-        {
-          name: user.name,
-          index: user.id,
-        },
-      ],
-    };
+  if (user && room) {
+    const userInRoom = _getUserInRoom(room.roomId);
+    if (userInRoom.index === user.id) {
+      sendMessage(clientId, 'error', 'You can not add yourself into the room you are created');
+      return;
+    }
 
-    rooms.set(newRoom.roomId, newRoom);
-    Array.from(clients.keys()).forEach((id: ClientIdType) => {
-      sendMessage(id, 'update_room', Array.from(rooms.values()));
+    const usersForGame: IGameUser[] = [
+      { ...userInRoom, ships: null },
+      { index: user.id, name: user.name, ships: null },
+    ];
+    const newGame = _generateNewGame(usersForGame);
+
+    rooms.delete(data.indexRoom);
+    games.set(newGame.gameId, newGame);
+
+    sendMessages(Array.from(clients.keys()), 'update_room', Array.from(rooms.values()));
+
+    newGame.users.forEach((user) => {
+      const createGameResponseData = {
+        idGame: newGame.gameId,
+        idPlayer: user.index,
+      };
+
+      const clientId = users.get(user.index)?.clientId;
+
+      if (clientId) {
+        sendMessage(clientId, 'create_game', createGameResponseData);
+      }
     });
+  }
+};
+
+const _generateNewGame = (users: IGameUser[]): IGame => ({
+  gameId: randomUUID(),
+  users,
+  gameStatus: 'init',
+});
+
+const _getUserInRoom = (roomId: RoomIdType): IRoomUser => {
+  const room = rooms.get(roomId);
+  if (room) {
+    return room.roomUsers[0];
   }
 };

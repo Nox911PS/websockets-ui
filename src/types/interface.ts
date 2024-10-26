@@ -13,7 +13,8 @@ export type RequestType =
   | 'attack'
   | 'randomAttack'
   | 'turn'
-  | 'finish';
+  | 'finish'
+  | 'error';
 
 export interface IMessage {
   type: RequestType;
@@ -36,6 +37,13 @@ export interface IShipPosition {
 }
 
 export type ShipType = 'small' | 'medium' | 'large' | 'huge';
+export type ShipStatus = 'miss' | 'killed' | 'shot';
+export enum SHIP_CELL_NUMBER {
+  'small' = 1,
+  'medium' = 2,
+  'large' = 3,
+  'huge' = 4,
+}
 
 export interface IShip {
   position: IShipPosition;
@@ -47,5 +55,12 @@ export interface IShip {
 export interface IAddShipsData {
   gameId: GameIdType;
   ships: IShip[];
+  indexPlayer: UserIdType;
+}
+
+export interface IAttackData {
+  gameId: GameIdType;
+  x: number;
+  y: number;
   indexPlayer: UserIdType;
 }
