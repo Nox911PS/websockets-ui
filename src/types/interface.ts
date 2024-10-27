@@ -90,4 +90,4 @@ export interface IGrid {
   gridHelper: IGridHelper;
 }
 
-export type IGridShips = [][];
+export type IGridShips = [null | ShipIdType][];

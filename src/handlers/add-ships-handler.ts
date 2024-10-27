@@ -19,6 +19,7 @@ export const addShipsHandler = (data: IAddShipsData, clientId: ClientIdType) => 
     ...currentGame,
     users: updatedUsers,
     gameStatus: updatedStatus,
+    currentPlayerId: data.indexPlayer,
   };
 
   games.set(data.gameId, updatedGame);
@@ -77,7 +78,7 @@ const _setShipsToGrid = (ships: IShip[]): { gridShips: IGridShips; gridHelper: I
       } else {
         positionX = initialPositionX + k;
       }
-      gridShips[positionY][positionX] = shipId;
+      gridShips[positionX][positionY] = shipId;
       gridHelper[shipId].shipCoordinates.set(`${positionX}${positionY}`, {
         x: positionX,
         y: positionY,
