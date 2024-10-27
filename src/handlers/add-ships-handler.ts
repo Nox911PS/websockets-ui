@@ -1,8 +1,8 @@
 import { ClientIdType, UserIdType, users } from '../db/users';
-import { IAddShipsData, IGridHelper, IGridShips, IShip, IShipCoordinate, ShipIdType } from '../types/interface';
+import { IGridHelper, IGridShips, IShip, IShipCoordinate, ShipIdType } from '../types/interface';
 import { games, GameStatusType, IGame, IGameUser } from '../db/app';
 import { sendMessage } from '../helpers/helpers';
-import { IStartGameData, ITurnData } from '../types/response';
+import { IAddShipsData, IStartGameData, ITurnData } from '../types/response';
 import { randomUUID } from 'node:crypto';
 
 export const addShipsHandler = (data: IAddShipsData, clientId: ClientIdType) => {

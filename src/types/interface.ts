@@ -1,5 +1,4 @@
-import { GameIdType, RoomIdType } from '../db/app';
-import { UserIdType } from '../db/users';
+import { RoomIdType } from '../db/app';
 import { UUID } from 'node:crypto';
 
 export type RequestType =
@@ -41,31 +40,12 @@ export interface IShipPosition {
 
 export type ShipType = 'small' | 'medium' | 'large' | 'huge';
 export type ShipStatus = 'miss' | 'killed' | 'shot';
-export enum SHIP_CELL_NUMBER {
-  'small' = 1,
-  'medium' = 2,
-  'large' = 3,
-  'huge' = 4,
-}
 
 export interface IShip {
   position: IShipPosition;
   direction: boolean;
   length: number;
   type: ShipType;
-}
-
-export interface IAddShipsData {
-  gameId: GameIdType;
-  ships: IShip[];
-  indexPlayer: UserIdType;
-}
-
-export interface IAttackData {
-  gameId: GameIdType;
-  x: number;
-  y: number;
-  indexPlayer: UserIdType;
 }
 
 export interface IShipCoordinate {

@@ -1,15 +1,8 @@
-import { ClientIdType, clients, IUser, UserIdType, users } from '../db/users';
-import {
-  IAddShipsData,
-  IAttackData,
-  IGridHelperShip,
-  IShipCoordinate,
-  ShipIdType,
-  ShipStatus,
-} from '../types/interface';
-import { games, GameStatusType, IGame, IGameUser, rooms, winners } from '../db/app';
-import { findUserByClientId, sendMessage } from '../helpers/helpers';
-import { IAttackFeedbackData, IStartGameData, ITurnData } from '../types/response';
+import { ClientIdType, clients, users } from '../db/users';
+import { IGridHelperShip, IShipCoordinate, ShipStatus } from '../types/interface';
+import { games, winners } from '../db/app';
+import { sendMessage } from '../helpers/helpers';
+import { IAttackData, IAttackFeedbackData, IStartGameData, ITurnData } from '../types/response';
 
 export const attackHandler = (data: IAttackData, clientId: ClientIdType) => {
   const currentGame = games.get(data.gameId);
