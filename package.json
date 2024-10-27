@@ -9,7 +9,7 @@
     "lint": "eslint \"src/**/*.ts\"",
     "test:verbose": "jest",
     "build": "webpack --env NODE_ENV=production",
-    "start:dev": "cross-env NODE_ENV=development ts-node-dev --respawn --transpile-only src/index.ts",
+    "start:dev": "cross-env NODE_ENV=development ts-node-dev --inspect --respawn --transpile-only src/index.ts",
     "start:prod": "npm run build && node dist/index.js"
   },
   "author": "Nox",

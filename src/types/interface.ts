@@ -1,5 +1,6 @@
 import { GameIdType, RoomIdType } from '../db/app';
 import { UserIdType } from '../db/users';
+import { UUID } from 'node:crypto';
 
 export type RequestType =
   | 'reg'
@@ -15,6 +16,8 @@ export type RequestType =
   | 'turn'
   | 'finish'
   | 'error';
+
+export type ShipIdType = UUID;
 
 export interface IMessage {
   type: RequestType;
@@ -64,3 +67,27 @@ export interface IAttackData {
   y: number;
   indexPlayer: UserIdType;
 }
+
+export interface IShipCoordinate {
+  x: number;
+  y: number;
+  status: 'available' | 'shooted';
+}
+
+export interface IGridHelper {
+  [key: ShipIdType]: IGridHelperShip;
+}
+
+export interface IGridHelperShip {
+  id: ShipIdType;
+  shipCoordinates: Map<string, IShipCoordinate>;
+  remainingShoots: number;
+  aroundShipCoordinates: Map<string, IShipCoordinate>;
+}
+
+export interface IGrid {
+  gridShips: IGridShips;
+  gridHelper: IGridHelper;
+}
+
+export type IGridShips = [][];

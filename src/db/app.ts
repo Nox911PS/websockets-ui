@@ -1,6 +1,6 @@
 import { UserIdType } from './users';
 import { UUID } from 'node:crypto';
-import { IShip } from '../types/interface';
+import { IGrid, IShip, IShipPosition } from '../types/interface';
 export type GameStatusType = 'init' | 'set_ships' | 'start_game' | 'in_progress' | 'finish';
 
 export type RoomIdType = UUID;
@@ -25,7 +25,8 @@ export interface IGameUser {
   name: string;
   index: UserIdType;
   ships: IShip[] | null;
-  shipsGrid: [][];
+  gridShips: IGrid;
+  shootsHistory: IShipPosition[];
 }
 
 export interface IGame {
