@@ -7,6 +7,7 @@ import { messageHandler } from '../handlers/message-handler';
 const PORT = 3000;
 
 const wss = new WebSocketServer({ port: PORT });
+console.log(`WebSocket connected on the ${PORT} port!`);
 
 wss.on('connection', (ws: WebSocket) => {
   const clientId: UUID = randomUUID();

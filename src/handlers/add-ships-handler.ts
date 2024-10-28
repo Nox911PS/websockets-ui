@@ -51,10 +51,10 @@ const _setShipsToGrid = (ships: IShip[]): { gridShips: IGridShips; gridHelper: I
   // the idea to create array of arrays and then set ships in these arrays like a coordinate
   // for example [[null, uuid of the ship, null, ...], ...] It means the coordinate for the ship is x: 0, y:1
   const gridLength = 10;
-  const gridShips = [];
+  const gridShips: [ShipIdType, null][] = [];
   const gridHelper: IGridHelper = {};
   for (let i = 0; i < gridLength; i++) {
-    gridShips.push(new Array(gridLength).fill(null));
+    gridShips.push(new Array(gridLength).fill(null) as [ShipIdType, null]);
   }
 
   ships.forEach((ship) => {
@@ -98,7 +98,7 @@ const _setShipsToGrid = (ships: IShip[]): { gridShips: IGridShips; gridHelper: I
     });
   });
 
-  return { gridShips, gridHelper };
+  return { gridShips: gridShips as unknown as IGridShips, gridHelper };
 };
 
 const _getAroundShipCoordinates = (positionX: number, positionY: number): Map<string, IShipCoordinate> => {

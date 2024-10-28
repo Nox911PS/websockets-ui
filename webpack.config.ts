@@ -27,7 +27,7 @@ export default (env: Env): Configuration => {
       extensions: ['.ts', '.js'],
     },
     output: {
-      filename: 'index.ts',
+      filename: 'index.js',
       path: path.resolve(__dirname, 'dist'),
     },
     plugins: [

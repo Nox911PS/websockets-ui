@@ -140,7 +140,7 @@ export const attackHandler = (data: IAttackData, clientId: ClientIdType) => {
         );
 
         shipCoordinates &&
-          enemyUserGameData.gridShips.gridHelper[enemyGridCell].shipCoordinates.set(`${data.x}${data.y}`, {
+          enemyUserGameData.gridShips?.gridHelper[enemyGridCell].shipCoordinates.set(`${data.x}${data.y}`, {
             ...shipCoordinates,
             status: 'shooted',
           });

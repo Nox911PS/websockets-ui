@@ -31,3 +31,5 @@ export const sendMessage = (clientId: ClientIdType, type: RequestType, data: unk
 export const sendMessages = (clientIds: ClientIdType[], type: RequestType, data: unknown) => {
   clientIds.forEach((clientId) => sendMessage(clientId, type, data));
 };
+
+// export const logger = ()

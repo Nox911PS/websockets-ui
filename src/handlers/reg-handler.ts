@@ -44,7 +44,7 @@ const _generateNewUser = (name: string, password: string): IUser => ({
   connectionState: 'disconnected',
 });
 
-const _prepareUserData = (user: IUser, isError, errorText = '') => ({
+const _prepareUserData = (user: IUser, isError: boolean, errorText = '') => ({
   name: user.name,
   index: user.id,
   error: isError,

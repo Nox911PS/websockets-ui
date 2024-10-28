@@ -10,14 +10,14 @@ export const addUserToRoomHandler = (data: IAddUserToRoomData, clientId: ClientI
 
   if (user && room) {
     const userInRoom = _getUserInRoom(room.roomId);
-    if (userInRoom.index === user.id) {
+    if (!userInRoom || userInRoom.index === user.id) {
       sendMessage(clientId, 'error', 'You can not add yourself into the room you are created');
       return;
     }
 
     const usersForGame: IGameUser[] = [
-      { ...userInRoom, ships: null },
-      { index: user.id, name: user.name, ships: null },
+      { ...userInRoom, ships: null } as IGameUser,
+      { index: user.id, name: user.name, ships: null } as IGameUser,
     ];
     const newGame = _generateNewGame(usersForGame);
 
@@ -45,9 +45,10 @@ const _generateNewGame = (users: IGameUser[]): IGame => ({
   gameId: randomUUID(),
   users,
   gameStatus: 'init',
+  currentPlayerId: null,
 });
 
-const _getUserInRoom = (roomId: RoomIdType): IRoomUser => {
+const _getUserInRoom = (roomId: RoomIdType): IRoomUser | undefined => {
   const room = rooms.get(roomId);
   if (room) {
     return room.roomUsers[0];

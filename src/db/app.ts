@@ -33,7 +33,7 @@ export interface IGame {
   gameId: GameIdType;
   users: IGameUser[];
   gameStatus: GameStatusType;
-  currentPlayerId: UserIdType;
+  currentPlayerId: UserIdType | null;
 }
 
 export const winners = new Map<UserIdType, IWinner>();
