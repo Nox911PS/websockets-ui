@@ -1,5 +1,5 @@
 import { UUID } from 'node:crypto';
-import { parseRequest } from '../helpers/helpers';
+import { logger, parseRequest } from '../helpers/helpers';
 import { regHandler } from './reg-handler';
 import { createRoomHandler } from './create-room-handler';
 import { IAddUserToRoomData, IRegData } from '../types/interface';
@@ -12,6 +12,8 @@ import { randomAttackHandler } from './random-attack-handler';
 export const messageHandler = (message: string, clientId: UUID) => {
   try {
     const parsedMessage = parseRequest(message);
+
+    logger(parsedMessage.type, parsedMessage.data as string, true);
 
     if (parsedMessage.type === 'reg') {
       regHandler(parsedMessage.data as IRegData, clientId);

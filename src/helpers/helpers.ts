@@ -23,6 +23,7 @@ export const sendMessage = (clientId: ClientIdType, type: RequestType, data: unk
     id: 0,
   };
 
+  logger(type, response.data, false);
   if (ws) {
     ws.send(JSON.stringify(response));
   }
@@ -32,4 +33,5 @@ export const sendMessages = (clientIds: ClientIdType[], type: RequestType, data:
   clientIds.forEach((clientId) => sendMessage(clientId, type, data));
 };
 
-// export const logger = ()
+export const logger = (command: string, result: string, isRequest) =>
+  console.info(`${isRequest ? 'Request' : 'Response'} Command: `, command, '\nData: ', result, '\n');
