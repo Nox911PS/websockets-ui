@@ -13,7 +13,7 @@ export const messageHandler = (message: string, clientId: UUID) => {
   try {
     const parsedMessage = parseRequest(message);
 
-    logger(parsedMessage.type, parsedMessage.data as string, true);
+    logger(parsedMessage.type, parsedMessage.data, true);
 
     if (parsedMessage.type === 'reg') {
       regHandler(parsedMessage.data as IRegData, clientId);

@@ -33,5 +33,11 @@ export const sendMessages = (clientIds: ClientIdType[], type: RequestType, data:
   clientIds.forEach((clientId) => sendMessage(clientId, type, data));
 };
 
-export const logger = (command: string, result: string, isRequest: boolean): void =>
-  console.info(`${isRequest ? 'Request' : 'Response'} Command: `, command, '\nData: ', result, '\n');
+export const logger = (command: string, result: string | unknown, isRequest: boolean): void =>
+  console.info(
+    `${isRequest ? 'Request' : 'Response'} Command: `,
+    command,
+    '\nData: ',
+    typeof result === 'string' ? result : JSON.stringify(result),
+    '\n',
+  );

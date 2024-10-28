@@ -62,7 +62,7 @@ export const attackHandler = (data: IAttackData, clientId: ClientIdType) => {
       games.set(currentGame.gameId, currentGame);
 
       // update wins for current user
-      if (winners) {
+      if (isWinner) {
         const currentUserData = users.get(data.indexPlayer);
         currentUserData && users.set(data.indexPlayer, { ...currentUserData, wins: currentUserData.wins + 1 });
         currentUserData &&
