@@ -26,7 +26,7 @@ export interface IGameUser {
   index: UserIdType;
   ships: IShip[] | null;
   gridShips: IGrid;
-  shootsHistory: IShipPosition[];
+  shootsHistory: Set<string>;
 }
 
 export interface IGame {

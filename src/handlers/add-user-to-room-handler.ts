@@ -16,8 +16,8 @@ export const addUserToRoomHandler = (data: IAddUserToRoomData, clientId: ClientI
     }
 
     const usersForGame: IGameUser[] = [
-      { ...userInRoom, ships: null } as IGameUser,
-      { index: user.id, name: user.name, ships: null } as IGameUser,
+      { ...userInRoom, ships: null, shootsHistory: new Set<string>() } as IGameUser,
+      { index: user.id, name: user.name, ships: null, shootsHistory: new Set<string>() } as IGameUser,
     ];
     const newGame = _generateNewGame(usersForGame);
 

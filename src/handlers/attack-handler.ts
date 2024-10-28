@@ -1,6 +1,6 @@
-import { ClientIdType, clients, users } from '../db/users';
+import { ClientIdType, clients, UserIdType, users } from '../db/users';
 import { IGridHelperShip, IShipCoordinate, ShipStatus } from '../types/interface';
-import { games, winners } from '../db/app';
+import { GameIdType, games, IGame, winners } from '../db/app';
 import { sendMessage } from '../helpers/helpers';
 import { IAttackData, IAttackFeedbackData, IStartGameData, ITurnData } from '../types/response';
 
@@ -8,7 +8,20 @@ export const attackHandler = (data: IAttackData, clientId: ClientIdType) => {
   const currentGame = games.get(data.gameId);
 
   if (currentGame) {
-    if (currentGame.currentPlayerId !== data.indexPlayer) return;
+    // skip attack if it is not a user turn
+    if (currentGame.currentPlayerId !== data.indexPlayer) {
+      sendMessage(clientId, 'error', 'Right now the turn of the second player');
+      return;
+    }
+
+    const currentUserGameData = currentGame.users.find((user) => user.index === data.indexPlayer);
+    // skip attack if user click on already shooted cell
+    if (currentUserGameData && currentUserGameData.shootsHistory.has(`${data.x}${data.y}`)) {
+      sendMessage(clientId, 'error', 'You already shoot to this cell');
+      return;
+    }
+
+    updateUserShootsHistory(data.gameId, data.indexPlayer, data.x, data.y);
 
     const enemyUserGameData = currentGame.users.find((user) => user.index !== data.indexPlayer);
 
@@ -27,6 +40,7 @@ export const attackHandler = (data: IAttackData, clientId: ClientIdType) => {
         const turnData: ITurnData = {
           currentPlayer: enemyUserData.id,
         };
+
         sendMessage(id, 'attack', _generateAttackFeedbackData(data, 'miss'));
         sendMessage(id, 'turn', turnData);
       });
@@ -93,6 +107,7 @@ export const attackHandler = (data: IAttackData, clientId: ClientIdType) => {
           });
 
           coordinatesForAroundKilledShip.forEach((aroundShip) => {
+            updateUserShootsHistory(data.gameId, data.indexPlayer, aroundShip.x, aroundShip.y);
             sendMessage(
               id,
               'attack',
@@ -167,3 +182,21 @@ const _generateAttackFeedbackData = (data: IAttackData, status: ShipStatus): IAt
   currentPlayer: data.indexPlayer,
   status,
 });
+
+const updateUserShootsHistory = (
+  gameId: GameIdType,
+  userId: UserIdType,
+  positionX: number,
+  positionY: number,
+): void => {
+  const currentGame = games.get(gameId);
+
+  if (currentGame) {
+    currentGame.users.forEach((user) => {
+      if (user.index === userId) {
+        user.shootsHistory.add(`${positionX}${positionY}`);
+      }
+    });
+    games.set(currentGame.gameId, currentGame);
+  }
+};
